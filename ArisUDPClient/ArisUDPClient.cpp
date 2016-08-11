@@ -52,6 +52,8 @@ extern "C" __declspec(dllexport) void __stdcall GetExchangeData(struct ArisExcha
 	data->pitch = origin_data.imu_data.pitch;
 	data->roll = origin_data.imu_data.roll;
 
+	data->count = origin_data.timecount;
+
 	data_lock.unlock();
 }
 
@@ -60,7 +62,7 @@ extern "C" __declspec(dllexport) void __stdcall GetExchangeData(struct ArisExcha
 extern "C" __declspec(dllexport) void __stdcall StartUDPListener()
 {
 	aris::control::data_emitter::Data data_report;
-	std::cout << "Start test UDP" << std::endl;
+	std::cout << "Start test UDP"<<sizeof(data_report) << std::endl;
 	
 
 	char buffer[8192];
@@ -69,7 +71,7 @@ extern "C" __declspec(dllexport) void __stdcall StartUDPListener()
 	while (1)
 	{
 		int ret = Socket.RecvFrom(buffer, 8192);
-		std::cout << "Get data size: " << ret << std::endl;
+		//std::cout << "Get data size: " << ret << std::endl;
 		if (data_lock.try_lock())
 		{
 			memcpy(&origin_data, buffer, sizeof(origin_data));
@@ -80,7 +82,7 @@ extern "C" __declspec(dllexport) void __stdcall StartUDPListener()
 
 
 		//for debug
-		std::cout << (int)origin_data.motor_data.at(0).cmd << std::endl;
+		//std::cout << (int)origin_data.motor_data.at(0).statusword <<" "<< (int)origin_data.motor_data.at(1).statusword << std::endl;
 
 		if (ret == 0 || ret == SOCKET_ERROR || ret<0)
 		{
